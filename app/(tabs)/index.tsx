@@ -1,98 +1,242 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import { ThemedText } from "@/components/themed-text";
+import { ThemedView } from "@/components/themed-view";
+import { useThemeColor } from "@/hooks/use-theme-color";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Image } from "expo-image";
+import { useRouter } from "expo-router";
+import { jwtDecode } from "jwt-decode";
+import { useState } from "react";
+import {
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
-import { HelloWave } from '@/components/hello-wave';
-import ParallaxScrollView from '@/components/parallax-scroll-view';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { Link } from 'expo-router';
+export default function LoginScreen() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const router = useRouter();
 
-export default function HomeScreen() {
+  const backgroundColor = useThemeColor({}, "background");
+  const textColor = useThemeColor({}, "text");
+  const inputBorderColor = useThemeColor(
+    { light: "#E5E7EB", dark: "#374151" },
+    "inputBorder"
+  );
+  const inputBackgroundColor = useThemeColor(
+    { light: "#FFFFFF", dark: "#1F2937" },
+    "inputBackground"
+  );
+  const primaryColor = useThemeColor(
+    { light: "#7C3AED", dark: "#7C3AED" },
+    "buttonPrimary"
+  );
+  const linkColor = useThemeColor(
+    { light: "#7C3AED", dark: "#A78BFA" },
+    "primary"
+  );
+
+  const handleLogin = async () => {
+    try {
+      const response = await fetch("http://192.168.0.67:8080/sessions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      if (response.status !== 200) {
+        Alert.alert("Login failed", "Invalid credentials.");
+        return;
+      }
+
+      const token = await response.json();
+      const user = jwtDecode(token.token);
+
+      console.log(user);
+
+      await AsyncStorage.setItem("userToken", token.token);
+
+      router.replace("/(tabs)/home");
+
+      return user;
+    } catch (error) {
+      Alert.alert("Login Error", "An unexpected error occurred.");
+    }
+  };
+
+  const handleRegister = () => {
+    router.push("/register");
+  };
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <Link href="/modal">
-          <Link.Trigger>
-            <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-          </Link.Trigger>
-          <Link.Preview />
-          <Link.Menu>
-            <Link.MenuAction title="Action" icon="cube" onPress={() => alert('Action pressed')} />
-            <Link.MenuAction
-              title="Share"
-              icon="square.and.arrow.up"
-              onPress={() => alert('Share pressed')}
+    <KeyboardAvoidingView
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      style={[styles.container, { backgroundColor }]}
+    >
+      <ScrollView contentContainerStyle={styles.scrollContent}>
+        <ThemedView style={styles.content}>
+          {/* Logo */}
+          <View style={styles.logoContainer}>
+            <Image
+              source={require("@/assets/images/icon.png")}
+              style={styles.logo}
+              contentFit="contain"
             />
-            <Link.Menu title="More" icon="ellipsis">
-              <Link.MenuAction
-                title="Delete"
-                icon="trash"
-                destructive
-                onPress={() => alert('Delete pressed')}
-              />
-            </Link.Menu>
-          </Link.Menu>
-        </Link>
+          </View>
 
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+          {/* Title */}
+          <ThemedText type="title" style={styles.title}>
+            Welcome Back
+          </ThemedText>
+          <ThemedText style={styles.subtitle}>Sign in to continue</ThemedText>
+
+          {/* Email Input */}
+          <View style={styles.inputContainer}>
+            <ThemedText style={styles.label}>Email</ThemedText>
+            <TextInput
+              style={[
+                styles.input,
+                {
+                  color: textColor,
+                  borderColor: inputBorderColor,
+                  backgroundColor: inputBackgroundColor,
+                },
+              ]}
+              placeholder="Enter your email"
+              placeholderTextColor="#9CA3AF"
+              value={email}
+              onChangeText={setEmail}
+              keyboardType="email-address"
+              autoCapitalize="none"
+              autoComplete="email"
+            />
+          </View>
+
+          {/* Password Input */}
+          <View style={styles.inputContainer}>
+            <ThemedText style={styles.label}>Password</ThemedText>
+            <TextInput
+              style={[
+                styles.input,
+                {
+                  color: textColor,
+                  borderColor: inputBorderColor,
+                  backgroundColor: inputBackgroundColor,
+                },
+              ]}
+              placeholder="Enter your password"
+              placeholderTextColor="#9CA3AF"
+              value={password}
+              onChangeText={setPassword}
+              secureTextEntry
+              autoCapitalize="none"
+              autoComplete="password"
+            />
+          </View>
+
+          {/* Login Button */}
+          <TouchableOpacity
+            style={[styles.loginButton, { backgroundColor: primaryColor }]}
+            onPress={handleLogin}
+          >
+            <ThemedText style={styles.loginButtonText}>Login</ThemedText>
+          </TouchableOpacity>
+
+          {/* Register Button */}
+          <View style={styles.registerContainer}>
+            <ThemedText>Don't have an account? </ThemedText>
+            <TouchableOpacity onPress={handleRegister}>
+              <ThemedText style={[styles.registerLink, { color: linkColor }]}>
+                Register
+              </ThemedText>
+            </TouchableOpacity>
+          </View>
+        </ThemedView>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
+  container: {
+    flex: 1,
   },
-  stepContainer: {
-    gap: 8,
+  scrollContent: {
+    flexGrow: 1,
+    justifyContent: "center",
+  },
+  content: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingHorizontal: 24,
+    paddingVertical: 40,
+  },
+  logoContainer: {
+    marginBottom: 32,
+    alignItems: "center",
+  },
+  logo: {
+    width: 120,
+    height: 120,
+  },
+  title: {
     marginBottom: 8,
+    textAlign: "center",
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+  subtitle: {
+    marginBottom: 32,
+    textAlign: "center",
+    opacity: 0.7,
+  },
+  inputContainer: {
+    width: "100%",
+    marginBottom: 20,
+  },
+  label: {
+    marginBottom: 8,
+    fontSize: 14,
+    fontWeight: "600",
+  },
+  input: {
+    width: "100%",
+    height: 50,
+    borderWidth: 1,
+    borderRadius: 8,
+    paddingHorizontal: 16,
+    fontSize: 16,
+  },
+  loginButton: {
+    width: "100%",
+    height: 50,
+    borderRadius: 12,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 8,
+    shadowColor: "#7C3AED",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 5,
+  },
+  loginButtonText: {
+    color: "#FFFFFF",
+    fontSize: 16,
+    fontWeight: "600",
+  },
+  registerContainer: {
+    flexDirection: "row",
+    marginTop: 24,
+    alignItems: "center",
+  },
+  registerLink: {
+    fontWeight: "600",
   },
 });

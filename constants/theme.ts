@@ -5,25 +5,40 @@
 
 import { Platform } from 'react-native';
 
-const tintColorLight = '#0a7ea4';
-const tintColorDark = '#fff';
+const tintColorLight = '#7C3AED'; // GymPass purple
+const tintColorDark = '#A78BFA'; // Light purple for dark mode
 
 export const Colors = {
   light: {
-    text: '#11181C',
-    background: '#fff',
+    text: '#1A1A1A',
+    background: '#FFFFFF', // Pure white background like GymPass
     tint: tintColorLight,
-    icon: '#687076',
-    tabIconDefault: '#687076',
+    icon: '#6B7280',
+    tabIconDefault: '#9CA3AF',
     tabIconSelected: tintColorLight,
+    primary: '#7C3AED', // GymPass primary purple
+    secondary: '#EC4899', // GymPass pink accent
+    cardBackground: '#F8F9FA', // Subtle off-white for cards
+    inputBackground: '#FFFFFF',
+    inputBorder: '#E0E0E0',
+    buttonPrimary: '#7C3AED',
+    buttonSecondary: '#EC4899',
+    divider: '#F0F0F0',
   },
   dark: {
-    text: '#ECEDEE',
-    background: '#151718',
+    text: '#F9FAFB',
+    background: '#111827', // Dark blue-gray
     tint: tintColorDark,
-    icon: '#9BA1A6',
-    tabIconDefault: '#9BA1A6',
+    icon: '#9CA3AF',
+    tabIconDefault: '#6B7280',
     tabIconSelected: tintColorDark,
+    primary: '#A78BFA', // Light purple for dark mode
+    secondary: '#F472B6', // Light pink for dark mode
+    cardBackground: '#1F2937',
+    inputBackground: '#1F2937',
+    inputBorder: '#374151',
+    buttonPrimary: '#7C3AED',
+    buttonSecondary: '#EC4899',
   },
 };
 
