@@ -76,7 +76,7 @@ export default function HomeScreen() {
   useEffect(() => {
     async function userInformation() {
       const userInfo = await userMetrics();
-      console.log(userInfo)
+      console.log(userInfo);
       setCheckinsCount(userInfo.checkinsCount);
     }
 
