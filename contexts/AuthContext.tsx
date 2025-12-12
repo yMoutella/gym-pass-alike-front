@@ -65,9 +65,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     try {
       const decoded: any = jwtDecode(newToken);
       setUser({
-        name: decoded?.name ?? "User",
+        name: decoded?.name ?? "Void",
         email: decoded?.email,
-        plan: decoded?.plan ?? "Basic Plan",
+        plan: decoded?.plan ?? "FREE",
         ...decoded,
       });
     } catch {

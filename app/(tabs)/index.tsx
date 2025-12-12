@@ -13,6 +13,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { userMetrics } from "../util/fetch-user-information";
 
 interface User {
   name: string;
@@ -28,7 +29,7 @@ interface Gym {
 }
 
 export default function HomeScreen() {
-  const [checkinsCount, setCheckinsCount] = useState(0);
+  const [checkinsCount, setCheckinsCount] = useState(12);
   const [searchQuery, setSearchQuery] = useState("");
   const [gyms, setGyms] = useState<Gym[]>([
     {
@@ -73,10 +74,13 @@ export default function HomeScreen() {
   );
 
   useEffect(() => {
-    // Example: fetch check-ins count from API here when authenticated
-    if (isAuthenticated) {
-      setCheckinsCount(12);
+    async function userInformation() {
+      const userInfo = await userMetrics();
+      console.log(userInfo)
+      setCheckinsCount(userInfo.checkinsCount);
     }
+
+    userInformation();
   }, [isAuthenticated]);
 
   const getInitials = (name: string) => {

@@ -4,7 +4,6 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useThemeColor } from "@/hooks/use-theme-color";
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
-import { jwtDecode } from "jwt-decode";
 import { useEffect, useState } from "react";
 import {
   Alert,
@@ -16,6 +15,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { getUserInformations } from "../util/fetch-user-information";
 
 export default function LoginScreen() {
   const [email, setEmail] = useState("");
@@ -50,24 +50,15 @@ export default function LoginScreen() {
 
   const handleLogin = async () => {
     try {
-      const response = await fetch("http://192.168.0.67:8080/sessions", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password }),
-      });
+      const response = await getUserInformations({ email, password });
 
-      if (response.status !== 200) {
+      if (response?.status !== 200) {
         Alert.alert("Login failed", "Invalid credentials.");
         return;
       }
 
-      const token = await response.json();
-      // Save and propagate auth state
-      await signIn(token.token);
+      await signIn(response.token);
       router.replace("/(tabs)");
-      return jwtDecode(token.token);
     } catch (error) {
       Alert.alert("Login Error", "An unexpected error occurred.");
     }

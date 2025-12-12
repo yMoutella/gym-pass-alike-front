@@ -27,9 +27,6 @@
     },
     "plugins": [
       "expo-router",
-      {
-        "unstable_useServerMiddleware": true
-      },
       [
         "expo-splash-screen",
         {

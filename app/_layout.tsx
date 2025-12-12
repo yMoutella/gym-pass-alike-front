@@ -4,14 +4,7 @@ import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import "react-native-reanimated";
 
-export const unstable_settings = {
-  anchor: "(tabs)",
-};
-
 export default function RootLayout() {
-  // Force dark theme by default
-  const colorScheme = "dark";
-
   return (
     <ThemeProvider value={DarkTheme}>
       <AuthProvider>
@@ -24,7 +17,7 @@ export default function RootLayout() {
           />
           <Stack.Screen
             name="register"
-            options={{ 
+            options={{
               headerShown: true,
               title: "Create Account",
               headerTitleAlign: "center",
