@@ -1,11 +1,11 @@
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
+import { useAuth } from "@/contexts/AuthContext";
 import { useThemeColor } from "@/hooks/use-theme-color";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
 import { jwtDecode } from "jwt-decode";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Alert,
   KeyboardAvoidingView,
@@ -21,6 +21,13 @@ export default function LoginScreen() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
+  const { signIn, isAuthenticated, isLoading } = useAuth();
+
+  useEffect(() => {
+    if (!isLoading && isAuthenticated) {
+      router.replace("/(tabs)/home");
+    }
+  }, [isLoading, isAuthenticated]);
 
   const backgroundColor = useThemeColor({}, "background");
   const textColor = useThemeColor({}, "text");
@@ -57,15 +64,10 @@ export default function LoginScreen() {
       }
 
       const token = await response.json();
-      const user = jwtDecode(token.token);
-
-      console.log(user);
-
-      await AsyncStorage.setItem("userToken", token.token);
-
+      // Save and propagate auth state
+      await signIn(token.token);
       router.replace("/(tabs)/home");
-
-      return user;
+      return jwtDecode(token.token);
     } catch (error) {
       Alert.alert("Login Error", "An unexpected error occurred.");
     }
