@@ -3513,10 +3513,10 @@ expo-modules-core@3.0.28:
   dependencies:
     invariant "^2.2.4"
 
-expo-router@~6.0.17:
-  version "6.0.17"
-  resolved "https://registry.yarnpkg.com/expo-router/-/expo-router-6.0.17.tgz#99b52adaad43e8fe9e90442acb8895601545424c"
-  integrity sha512-2n0lTidH2H+dOjk/Lu+krKIgK7b1qQ3O/9RWmf9P5IEuFiu7BSUgSDc+g69bUEElTnca8FR+zPTyk15kMXHrXg==
+expo-router@~6.0.19:
+  version "6.0.19"
+  resolved "https://registry.yarnpkg.com/expo-router/-/expo-router-6.0.19.tgz#f5ea7433236252b68f067c8fe16e662755111980"
+  integrity sha512-XK+vwpyEmGGamUM/S7+LwtjuBzbTm8VY401h8SOs8Tv1mrLl+7QNvAkk5lJiXgUVKaAIEXl8GxkWhF7mxBUzyg==
   dependencies:
     "@expo/metro-runtime" "^6.1.2"
     "@expo/schema-utils" "^0.1.8"
