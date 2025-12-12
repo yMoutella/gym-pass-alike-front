@@ -1,78 +1,27 @@
 import { useAuth } from "@/contexts/AuthContext";
-import { useThemeColor } from "@/hooks/use-theme-color";
-import { Ionicons } from "@expo/vector-icons";
-import { Tabs } from "expo-router";
+import { Icon, Label, NativeTabs } from "expo-router/unstable-native-tabs";
 
 export default function TabLayout() {
   const { isAuthenticated, isLoading } = useAuth();
-
-  const tabBarActiveTintColor = useThemeColor(
-    { light: "#7C3AED", dark: "#A78BFA" },
-    "primary"
-  );
-  const tabBarInactiveTintColor = useThemeColor(
-    { light: "#9CA3AF", dark: "#6B7280" },
-    "tabIconDefault"
-  );
-  const tabBarBackgroundColor = useThemeColor(
-    { light: "#FFFFFF", dark: "#1F2937" },
-    "cardBackground"
-  );
 
   if (isLoading) {
     return null;
   }
 
   return (
-    <Tabs
-      screenOptions={{
-        tabBarActiveTintColor,
-        tabBarInactiveTintColor,
-        headerShown: false,
-        tabBarLabelPosition: "below-icon",
-        tabBarLabelStyle: {
-          textAlign: "center",
-        },
-        tabBarIconStyle: {
-          margin: 0,
-        },
-        tabBarStyle: {
-          backgroundColor: tabBarBackgroundColor,
-          display: isAuthenticated ? "flex" : "none",
-          paddingTop: 10,
-        },
-      }}
-    >
-      <Tabs.Screen
-        name="index"
-        options={{
-          title: "Home",
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="home" size={size} color={color} />
-          ),
-          href: "/(tabs)",
-        }}
-      />
-      <Tabs.Screen
-        name="explore"
-        options={{
-          title: "Explore",
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="search" size={size} color={color} />
-          ),
-          href: "/(tabs)/explore",
-        }}
-      />
-      <Tabs.Screen
-        name="account"
-        options={{
-          title: "Account",
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="person" size={size} color={color} />
-          ),
-          href: "/(tabs)/account",
-        }}
-      />
-    </Tabs>
+    <NativeTabs>
+      <NativeTabs.Trigger name="index">
+        <Label>Home</Label>
+        <Icon sf="house.circle.fill" drawable="custom_android_drawable" />
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="explore">
+        <Icon sf="map.circle.fill" drawable="custom_settings_drawable" />
+        <Label>Explore</Label>
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="account">
+        <Icon sf="person.circle.fill" drawable="custom_settings_drawable" />
+        <Label>Profile</Label>
+      </NativeTabs.Trigger>
+    </NativeTabs>
   );
 }
