@@ -10,13 +10,15 @@ export default function AccountScreen() {
 
   const handleLogout = async () => {
     await signOut();
-    router.replace("/(tabs)");
+    router.replace("/(auth)/login");
   };
 
   return (
     <ThemedView style={styles.container}>
       <ThemedText type="title">My Account</ThemedText>
-      <ThemedText style={styles.subtitle}>Manage your profile and settings</ThemedText>
+      <ThemedText style={styles.subtitle}>
+        Manage your profile and settings
+      </ThemedText>
 
       <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
         <ThemedText style={styles.logoutText}>Logout</ThemedText>
