@@ -2,6 +2,7 @@ import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { useAuth } from "@/contexts/AuthContext";
 import { useThemeColor } from "@/hooks/use-theme-color";
+import * as Location from "expo-location";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import {
@@ -33,6 +34,9 @@ interface Gym {
 
 export default function HomeScreen() {
   const [checkinsCount, setCheckinsCount] = useState(12);
+  const [location, setLocation] = useState<Location.LocationObject | null>(
+    null
+  );
   const [searchQuery, setSearchQuery] = useState("");
   const [gyms, setGyms] = useState<Gym[]>([]);
   const router = useRouter();
@@ -67,16 +71,26 @@ export default function HomeScreen() {
       const userInfo = await userMetrics();
       setCheckinsCount(userInfo.checkinsCount);
 
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== "granted") {
+        console.log("Permission to access location was denied");
+        return;
+      }
+
+      const currentLocation = await Location.getCurrentPositionAsync({
+        accuracy: Location.Accuracy.High,
+      });
+      setLocation(currentLocation);
+
       const gymsResponse = await fetchNearbyGym({
-        latitude: -22.883517957578125,
-        longitude: -43.55681935027022,
+        latitude: currentLocation.coords.latitude,
+        longitude: currentLocation.coords.longitude,
         page: 1,
         token: token!,
       });
       setGyms(gymsResponse.gyms);
-      console.log(gymsResponse);
+      console.log(gyms)
     }
-
     pageInformations();
   }, [isAuthenticated]);
 
@@ -101,7 +115,10 @@ export default function HomeScreen() {
           {item.title}
         </ThemedText>
         <ThemedText style={styles.gymAddress}>{item.address}</ThemedText>
-        <ThemedText style={styles.gymDistance}>{item.distance}{item.unit} away</ThemedText>
+        <ThemedText style={styles.gymDistance}>
+          {item.distance}
+          {item.unit} away
+        </ThemedText>
       </View>
       <TouchableOpacity
         style={[styles.checkInButton, { backgroundColor: primaryColor }]}
