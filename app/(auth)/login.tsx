@@ -21,13 +21,17 @@ export default function LoginScreen() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
-  const { signIn, isAuthenticated, isLoading } = useAuth();
+  const { signIn, isAuthenticated, isLoading, validateAuth } = useAuth();
 
   useEffect(() => {
-    if (!isLoading && isAuthenticated) {
-      router.replace("/(tabs)");
+    async function checkAuth() {
+      await validateAuth();
+      if (!isLoading && isAuthenticated) {
+        router.replace("/(tabs)");
+      }
     }
-  }, [isLoading, isAuthenticated]);
+    checkAuth();
+  }, [isLoading, !isAuthenticated]);
 
   const backgroundColor = useThemeColor({}, "background");
   const textColor = useThemeColor({}, "text");

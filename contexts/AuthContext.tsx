@@ -20,6 +20,7 @@ export type AuthContextType = {
   isLoading: boolean;
   token: string | null;
   user: AuthUser;
+  validateAuth: () => Promise<void>;
   signIn: (token: string) => Promise<void>;
   signOut: () => Promise<void>;
 };
@@ -81,12 +82,31 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     setUser(null);
   };
 
+  const validateAuth = async () => {
+    const storedToken = await AsyncStorage.getItem("userToken");
+    if (!storedToken) {
+      setToken(null);
+    }
+
+    const validToken = await fetch("http://192.168.0.67:8080/me", {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${storedToken}`,
+      },
+    });
+
+    if (validToken.status !== 200) {
+      setToken(null);
+    }
+  };
+
   const value = useMemo(
     () => ({
       isAuthenticated: !!token,
       isLoading,
       token,
       user,
+      validateAuth,
       signIn,
       signOut,
     }),

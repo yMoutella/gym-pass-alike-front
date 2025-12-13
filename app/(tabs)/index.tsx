@@ -13,6 +13,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { fetchNearbyGym } from "../util/fetch-gym-information";
 import { userMetrics } from "../util/fetch-user-information";
 
 interface User {
@@ -23,37 +24,20 @@ interface User {
 
 interface Gym {
   id: string;
-  name: string;
+  title: string;
   address: string;
   distance: string;
+  unit: "km" | "m";
+  phone: string;
 }
 
 export default function HomeScreen() {
   const [checkinsCount, setCheckinsCount] = useState(12);
   const [searchQuery, setSearchQuery] = useState("");
-  const [gyms, setGyms] = useState<Gym[]>([
-    {
-      id: "1",
-      name: "FitGym Centro",
-      address: "Rua Principal, 123",
-      distance: "0.5 km",
-    },
-    {
-      id: "2",
-      name: "PowerHouse Academia",
-      address: "Av. Santos, 456",
-      distance: "1.2 km",
-    },
-    {
-      id: "3",
-      name: "BodyFit Studio",
-      address: "Rua das Flores, 789",
-      distance: "2.0 km",
-    },
-  ]);
+  const [gyms, setGyms] = useState<Gym[]>([]);
   const router = useRouter();
   const { user, isAuthenticated, isLoading } = useAuth();
-
+  const { validateAuth, token } = useAuth();
   const backgroundColor = useThemeColor({}, "background");
   const textColor = useThemeColor({}, "text");
   const cardBackground = useThemeColor(
@@ -74,13 +58,26 @@ export default function HomeScreen() {
   );
 
   useEffect(() => {
-    async function userInformation() {
+    async function pageInformations() {
+      await validateAuth();
+      if (!isAuthenticated) {
+        router.replace("/(auth)/login");
+        return;
+      }
       const userInfo = await userMetrics();
-      console.log(userInfo);
       setCheckinsCount(userInfo.checkinsCount);
+
+      const gymsResponse = await fetchNearbyGym({
+        latitude: -22.883517957578125,
+        longitude: -43.55681935027022,
+        page: 1,
+        token: token!,
+      });
+      setGyms(gymsResponse.gyms);
+      console.log(gymsResponse);
     }
 
-    userInformation();
+    pageInformations();
   }, [isAuthenticated]);
 
   const getInitials = (name: string) => {
@@ -101,10 +98,10 @@ export default function HomeScreen() {
     <View style={[styles.gymCard, { backgroundColor: cardBackground }]}>
       <View style={styles.gymCardContent}>
         <ThemedText type="subtitle" style={styles.gymName}>
-          {item.name}
+          {item.title}
         </ThemedText>
         <ThemedText style={styles.gymAddress}>{item.address}</ThemedText>
-        <ThemedText style={styles.gymDistance}>{item.distance} away</ThemedText>
+        <ThemedText style={styles.gymDistance}>{item.distance}{item.unit} away</ThemedText>
       </View>
       <TouchableOpacity
         style={[styles.checkInButton, { backgroundColor: primaryColor }]}

@@ -14,9 +14,7 @@ const getUserInformations = async (credentials: getUserInformation) => {
       },
       body: JSON.stringify(credentials),
     })
-
     const tokenData = await loginToken.json()
-
     const data = {
       status: loginToken.status,
       token: tokenData.token,
@@ -37,21 +35,5 @@ const userMetrics = async () => {
   return userMetrics
 }
 
-const refreshToken = async () => {
-  try {
-    const response = await fetch('http://192.168.0.67:8080/sessions/refresh', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    })
-
-    const refreshToken = await response.json()
-    return refreshToken
-  } catch (error) {
-    console.error('Error refreshing token:', error)
-  }
-}
-
-export { getUserInformations, refreshToken, userMetrics }
+export { getUserInformations, userMetrics }
 
