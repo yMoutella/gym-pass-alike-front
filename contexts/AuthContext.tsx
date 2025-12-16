@@ -88,7 +88,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       setToken(null);
     }
 
-    const validToken = await fetch("http://192.168.0.67:8080/me", {
+    const validToken = await fetch(`${process.env.EXPO_PUBLIC_HOST_API}/me`, {
       method: "GET",
       headers: {
         Authorization: `Bearer ${storedToken}`,

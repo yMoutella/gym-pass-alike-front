@@ -4,7 +4,7 @@ export async function fetchNearbyGym(data: {
   page: number
   token: string
 }) {
-  const url = new URL('http://192.168.0.67:8080/gyms/nearby')
+  const url = new URL(`${process.env.EXPO_PUBLIC_HOST_API}/gyms/nearby`)
   url.search = new URLSearchParams({
     latitude: data.latitude.toString(),
     longitude: data.longitude.toString(),
@@ -17,7 +17,5 @@ export async function fetchNearbyGym(data: {
     },
   })
   const gyms = await response.json()
-  console.log(`gyms: ${JSON.stringify(gyms)}`)
-
   return gyms
 }

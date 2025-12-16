@@ -46,7 +46,6 @@ export default function RegisterScreen() {
       alert("Passwords do not match");
       return;
     }
-    console.log("Register with:", name, email, password);
   };
 
   const handleBackToLogin = () => {

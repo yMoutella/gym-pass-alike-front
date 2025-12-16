@@ -17,12 +17,6 @@ import {
 import { fetchNearbyGym } from "../util/fetch-gym-information";
 import { userMetrics } from "../util/fetch-user-information";
 
-interface User {
-  name: string;
-  email: string;
-  plan: string;
-}
-
 interface Gym {
   id: string;
   title: string;
@@ -89,7 +83,6 @@ export default function HomeScreen() {
         token: token!,
       });
       setGyms(gymsResponse.gyms);
-      console.log(gyms)
     }
     pageInformations();
   }, [isAuthenticated]);
@@ -312,7 +305,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
-    elevation: 3,
+    elevation: 4,
   },
   gymCardContent: {
     marginBottom: 16,

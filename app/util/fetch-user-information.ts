@@ -7,13 +7,17 @@ interface getUserInformation {
 
 const getUserInformations = async (credentials: getUserInformation) => {
   try {
-    const loginToken = await fetch('http://192.168.0.67:8080/sessions', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(credentials),
-    })
+    const loginToken = await fetch(
+      `${process.env.EXPO_PUBLIC_HOST_API}/sessions`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(credentials),
+      }
+    )
+
     const tokenData = await loginToken.json()
     const data = {
       status: loginToken.status,
@@ -25,7 +29,7 @@ const getUserInformations = async (credentials: getUserInformation) => {
 }
 
 const userMetrics = async () => {
-  const userInfo = await fetch('http://192.168.0.67:8080/metrics', {
+  const userInfo = await fetch(`${process.env.EXPO_PUBLIC_HOST_API}/metrics`, {
     headers: {
       Authorization: `Bearer ${await AsyncStorage.getItem('userToken')}`,
     },
