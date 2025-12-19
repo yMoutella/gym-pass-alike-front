@@ -6,6 +6,7 @@ import * as Location from "expo-location";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import {
+  Alert,
   Dimensions,
   FlatList,
   ScrollView,
@@ -16,12 +17,15 @@ import {
 } from "react-native";
 import { fetchNearbyGym } from "../util/fetch-gym-information";
 import { userMetrics } from "../util/fetch-user-information";
+import { sendCheckin } from "../util/send-checkin";
 
 interface Gym {
   id: string;
   title: string;
   address: string;
   distance: string;
+  latitude: number;
+  longitude: number;
   unit: "km" | "m";
   phone: string;
 }
@@ -56,8 +60,11 @@ export default function HomeScreen() {
   );
 
   useEffect(() => {
-    async function pageInformations() {
+    async () => {
       await validateAuth();
+    };
+
+    async function pageInformations() {
       if (!isAuthenticated) {
         router.replace("/(auth)/login");
         return;
@@ -96,11 +103,21 @@ export default function HomeScreen() {
       .slice(0, 2);
   };
 
-  const handleCheckIn = (gymId: string) => {
+  const handleCheckIn = async (gym: any) => {
     // TODO: Implement check-in logic
-    console.log("Check-in at gym:", gymId);
-  };
+    const buildCheckInRequest = {
+      gymId: gym.id,
+      userId: user?.sub ? user?.sub : "",
+      latitude: gym.latitude,
+      longitude: gym.longitude,
+      userLatitude: location ? location.coords.latitude : 0,
+      userLongitude: location ? location.coords.longitude : 0,
+      token: token!,
+    };
 
+    const response = await sendCheckin(buildCheckInRequest);
+    Alert.alert(response.responseData.message);
+  };
   const renderGymCard = ({ item }: { item: Gym }) => (
     <View style={[styles.gymCard, { backgroundColor: cardBackground }]}>
       <View style={styles.gymCardContent}>
@@ -115,7 +132,7 @@ export default function HomeScreen() {
       </View>
       <TouchableOpacity
         style={[styles.checkInButton, { backgroundColor: primaryColor }]}
-        onPress={() => handleCheckIn(item.id)}
+        onPress={async () => await handleCheckIn(item)}
       >
         <ThemedText style={styles.checkInButtonText}>Check-in</ThemedText>
       </TouchableOpacity>
